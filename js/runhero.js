@@ -81,11 +81,12 @@ function _game() {
 		assMan.initializeSpriteSheets();
 
 		// creating the canvas-element
-		left = document.getElementById('left');
-		canvas = document.createElement('canvas');
+		//left = document.getElementById('left');
+		//canvas = document.createElement('canvas');
+		canvas = document.getElementById('canvas');
 		canvas.width = w;
 		canvas.height = h;
-		canvas.id = "canvas";
+		//canvas.id = "canvas";
 		left.appendChild(canvas);
 		self.canvas = canvas;
 

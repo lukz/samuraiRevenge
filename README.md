@@ -36,7 +36,7 @@ Im very exited to show you after few sleepless nights my first HTML5 game! (firs
  - magical wish-granting frog to generate awesomeness
 
 ## License
-Samurai Revenge by £ukasz Ømudziak is licensed under a Creative Commons Reconocimiento 3.0 Unported License.
+Samurai Revenge by ≈Åukasz ≈ªmudziak is licensed under a Creative Commons Reconocimiento 3.0 Unported License.
 Attribution 3.0 Unported (CC BY 3.0) - http://creativecommons.org/licenses/by/3.0/
 
 
