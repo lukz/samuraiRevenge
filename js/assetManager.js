@@ -18,6 +18,8 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
 
         SFX_HURT = 'assets/sfx/hurt';
 
+        ASSET_COUNT = 16;
+
 (function (window) {
 
     var assets = [], 
@@ -41,8 +43,29 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
         var canPlayMp3;
         var canPlayOgg;
 
-        // TODO!
+        // For drawing load progress
+        var canvas = document.getElementById('canvas');
+        stage = new createjs.Stage(canvas);
+
         var downloadProgress;
+        var loaderBar = new createjs.Container();
+        var barHeight = 20;
+        var loaderColor = createjs.Graphics.getRGB(247,247,247);
+        bar = new createjs.Shape();
+        bar.graphics.beginFill(loaderColor).drawRect(0, 0, 1, barHeight).endFill();
+
+        loaderWidth = 300;
+        var bgBar = new createjs.Shape();
+        var padding = 3;
+        bgBar.graphics.setStrokeStyle(1).beginStroke(loaderColor).drawRect(-padding/2, -padding/2, loaderWidth+padding, barHeight+padding);
+
+        loaderBar.x = canvas.width - loaderWidth>>1;
+        loaderBar.y = canvas.height - barHeight>>1; 
+        loaderBar.addChild(bar, bgBar);    
+
+        stage.addChild(loaderBar);
+        stage.update();
+
 
         // Need to check the canPlayType first or an exception
         // will be thrown for those browsers that don't support it      
@@ -112,7 +135,10 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
 
     self.loadSound = function(assetElement, url) {
         assetElement.src = url;
+        assetElement.addEventListener('canplaythrough', self.onLoadedAsset, false);
         assetElement.load();
+
+        ++requestedAssets;
     };
 
     // each time an asset is loaded
@@ -120,9 +146,16 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
     // and initialize the game, if so
     self.onLoadedAsset = function(e) {
         ++loadedAssets;
+        
+        bar.scaleX = (loaderWidth/ASSET_COUNT)*loadedAssets | 0;
+        stage.update();
+
         if ( loadedAssets == requestedAssets ) {
+            stage.removeAllChildren();
+            stage.update();
             theGame.initializeGame();
         }
+        
     }
 
 
