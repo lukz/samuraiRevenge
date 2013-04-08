@@ -93,7 +93,7 @@
         
         rockS.x = Math.random()*960+20 | 0;
 
-        rockS.y = 100 - (20 + Math.random()*40 | 0);
+        rockS.y = -100 - (40 + Math.random()*80 | 0);
         rockS.snapToPixel = true;
         rockS.gotoAndPlay('fall');
 
