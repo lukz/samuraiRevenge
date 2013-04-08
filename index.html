@@ -1,0 +1,95 @@
+<html>
+	<head>
+		<title>Samurai Revenge</title>
+		<style type="text/css">
+			#Canvas, #debugCanvas {
+				z-index: 1;
+				top: 0;
+			}
+
+			#debugCanvas {
+				z-index: 2;
+				display: none;
+				left:8;
+				top:8;
+				position: absolute;
+			}
+			/*
+			* {
+				padding: 0px;
+				border: 0px;
+				margin: 0px;
+			}
+			canvas {
+				border: red 1px solid;
+			}*/
+			body {
+				/*background-image: linear-gradient(bottom, rgb(37,9,115) 40%, rgb(101,60,176) 0%);
+				background-image: -o-linear-gradient(bottom, rgb(37,9,115) 40%, rgb(101,60,176) 0%);
+				background-image: -moz-linear-gradient(bottom, rgb(37,9,115) 40%, rgb(101,60,176) 0%);
+				background-image: -webkit-linear-gradient(bottom, rgb(37,9,115) 40%, rgb(101,60,176) 0%);
+				background-image: -ms-linear-gradient(bottom, rgb(37,9,115) 40%, rgb(101,60,176) 0%);
+*/
+				/*background-image: -webkit-gradient(
+					linear,
+					left bottom,
+					left top,
+					color-stop(0.4, rgb(37,9,115)),
+					color-stop(0, rgb(101,60,176))
+				);*/
+				background: url('bg.png') top; 
+				color: #fff; 
+				font-size: 11px; 
+				font-family: Verdana, Arial, Helvetica, sans-serif; 
+			}
+			#wrapper { 
+				margin: 0 auto; 
+				width: 990px; 
+			} 
+
+			#left { 
+				float: left; 
+				width: 800px; 
+				display: inline;
+			} 
+
+			#right { 
+				float: right; 
+				padding: 5px; 
+				width: 180px; 
+				display: inline; 
+
+				/*
+				background: #ddd; 
+color: #242424; 
+height: 590px; */
+
+			} 
+		</style>
+	</head>
+	<body>
+		<div id="wrapper"> 
+		<div id="left"></div> 
+		<div id="right">
+			<h1>Samurai Revenge</h1>
+			<p><strong>Controls:</strong><br />
+				Arrows - LEFT, RIGHT, JUMP<br />
+				Ctrl - bullet-time<br />
+				SPACE - start/reset<br />
+				Double UP for double JUMP!</p>
+			<p>For maximum framerate play under chrome.</p>
+		</div> 
+	</div> 
+	</body>
+	<script>
+		var createjs = window;
+	</script>
+	<script src="js/easeljs-0.6.0.min.js"></script>
+	<script src="js/stats.min.js"></script>
+	<script src="js/box2d.js"></script>
+	<script src="js/utils.js"></script>
+    <script src="js/hero.js"></script>
+    <script src="js/rockManager.js"></script>
+    <script src="js/assetManager.js"></script>
+	<script src="js/runhero.js"></script>
+</html>
