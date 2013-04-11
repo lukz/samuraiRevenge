@@ -34,7 +34,7 @@ function _game() {
 		top,
 		waterfallLayer,
 		hero, fly,
-		parallaxObjects = [], waterfalls = [],
+		parallaxMapLayers = [],
 		oldPoints = 0,
 		points = 0,
 		bulletTimeLeft = 100,
@@ -55,7 +55,7 @@ function _game() {
 	self.scale = scale;
 
 		// For tick()
-		var c,p,l,currTime,newScreenPos;
+		var c,p,l,layersCount,currTime,newScreenPos,l;
 
 	// holds all collideable objects
 	var collideables = [];
@@ -94,8 +94,25 @@ function _game() {
 		stage = new Stage(canvas);
 		this.stage = stage;
 
+		/**
+		 ** Create paralax bg
+		 **/
+		bg = new Container();
+		layersCount = 3;
+		for ( var i = 0; i < layersCount; i++) {
+			var tempLayer = new BitmapAnimation(spriteSheets[MAP_PRLX]);
+			var layerName = "layer" + (i+1);
+			tempLayer.gotoAndStop(layerName);
+			tempLayer.snapToPixel = true;
+
+			bg.addChild(tempLayer);
+			parallaxMapLayers.push(tempLayer);
+		}
+		layersCounr = parallaxMapLayers.length;
+
 		background = self.createMapBg();
-		stage.addChild(background);
+		bg.addChild(background);
+		stage.addChild(bg);
 
 		world = new Container();
 		stage.addChild(world);
@@ -393,13 +410,23 @@ function _game() {
 				pressSpaceTxt2.visible = !pressSpaceTxt2.visible;
 			}
 		}
+		
+		/**
+		 ** Paralax scrolling
+		 */
+		for (i = 0; i < layersCount; i++ ) {
+			p = parallaxMapLayers[i];
+			p.x = (world.x * i  * 0.3);
+		}
 
 		stage.update();
 		//stats.end(); // DEBUG
 	}
 
 	self.createMapBg = function() {
-		var map = new Bitmap(assets[MAP]);
+		//var map = new Bitmap(assets[MAP]);
+		var map = new BitmapAnimation(spriteSheets[MAP_PRLX]);
+		map.gotoAndStop("layer4");
 		map.snapToPixel = true;
 
 		return map;

@@ -1,6 +1,7 @@
 // CLEAR ASSETS!
 var     HERO_IMAGE = 'assets/other/samurai.png',
-        MAP= 'assets/maps/map1.png',
+        //MAP= 'assets/maps/map1.png',
+        MAP_PRLX= 'assets/maps/map1_paralax.png',
         FLOOR = 'assets/other/floor.png',
         SIDE = 'assets/other/side.png',
         HOURGLASS = 'assets/other/hourglass.png',
@@ -90,7 +91,8 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
 
 
         self.loadImage(HERO_IMAGE);
-        self.loadImage(MAP);
+        //self.loadImage(MAP);
+        self.loadImage(MAP_PRLX);
         self.loadImage(FLOOR);
         self.loadImage(SIDE);
         self.loadImage(HOURGLASS);
@@ -161,7 +163,8 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
 
     AssetManager.prototype.nns = function() {
         assets[HERO_IMAGE] = nearestNeighborScale(assets[HERO_IMAGE], scale);
-        assets[MAP] = nearestNeighborScale(assets[MAP], scale);
+        //assets[MAP] = nearestNeighborScale(assets[MAP], scale);
+        assets[MAP_PRLX] = nearestNeighborScale(assets[MAP_PRLX], scale);
         assets[FLOOR] = nearestNeighborScale(assets[FLOOR], scale);
         assets[SIDE] = nearestNeighborScale(assets[SIDE], scale);
         assets[HOURGLASS] = nearestNeighborScale(assets[HOURGLASS], scale / 1.4);
@@ -261,6 +264,24 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
             }
         }
         spriteSheets[ROCK_L] = new SpriteSheet(rockLData);
+
+        var map_prlx = {
+            images: [assets[MAP_PRLX]],
+            frames: [
+                [0,0,400*scale,240*scale],
+                [0,240*scale,400*scale,240*scale],
+                [0,480*scale,400*scale,240*scale],
+                [0,720*scale,400*scale,240*scale]
+            ],
+            animations: {
+                layer1:[0],
+                layer2:[1],
+                layer3:[2],
+                layer4:[3],
+            }
+        }
+        spriteSheets[MAP_PRLX] = new SpriteSheet(map_prlx);
+        
         var scale_temp = scale;
 
         scale = scale * 2;
@@ -390,6 +411,8 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
         scale = scale_temp;
 
         spriteSheets[STRINGS_L] = new SpriteSheet(stringsLData);
+
+
 
     }
 
