@@ -268,10 +268,10 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
         var map_prlx = {
             images: [assets[MAP_PRLX]],
             frames: [
-                [0,0,400*scale,240*scale],
-                [0,240*scale,400*scale,240*scale],
-                [0,480*scale,400*scale,240*scale],
-                [0,720*scale,400*scale,240*scale]
+                [0,0,400*scale,/*240*/117*scale],
+                [0,240*scale,400*scale,133*scale],
+                [0,480*scale,400*scale,157*scale],
+                [0,720+96*scale,400*scale,144*scale]
             ],
             animations: {
                 layer1:[0],
