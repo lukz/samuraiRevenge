@@ -366,7 +366,7 @@ function _game() {
 	 			bulletTimeTxt.text += '|';
 	 		}
 
-			rockManager.tick(world);
+			rockManager.tick(world,e);
 			hero.tick();
 			
 			if(bulletTime && !globalMusic.paused) {
@@ -484,6 +484,8 @@ function _game() {
             	if(hero.IsAlive && !bulletTime && (bulletTimeLeft > 0)) {
                 	bulletTime = true;
                 	SlowDownRate = 2;
+                	hero.BulletTimeMoveHelper = 1.4;
+
                 	hero._animation.frequency = 8;
                		rockManager.box2d.devideStep(SlowDownRate);
                	}
@@ -525,6 +527,7 @@ function _game() {
             case KEYCODE_CTRL:
                 bulletTime = false;
                 SlowDownRate = 1;
+                hero.BulletTimeMoveHelper = 1;
                 hero._animation.frequency = 4;
                 rockManager.box2d.devideStep(SlowDownRate);
                 break;

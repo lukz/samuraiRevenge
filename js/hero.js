@@ -16,6 +16,9 @@
 
     var IsOnGround = true;
 
+    // Let the Hero move a littile faster while on bullet time
+    var BulletTimeMoveHelper = 1;
+
     // for tick()
     var previousPosition, moveBy;
 
@@ -38,6 +41,7 @@
 		this.gotoAndPlay('idle');
         this.x = position.x;
         this.y = position.y;
+        this.BulletTimeMoveHelper = 1;
 
         this.velocity = new Point(0, 0);
 
@@ -103,7 +107,7 @@
             if(elapsed > 0.1)
                 elapsed = 0.1;
 
-            this.velocity.x += this.direction * MoveAcceleration * elapsed * Game.scale;
+            this.velocity.x += this.direction * MoveAcceleration * elapsed * this.BulletTimeMoveHelper * Game.scale;
             this.velocity.y = Math.clamp(this.velocity.y + GravityAcceleration * elapsed, -MaxFallSpeed, MaxFallSpeed);
 
             // Apply pseudo-drag horizontally.

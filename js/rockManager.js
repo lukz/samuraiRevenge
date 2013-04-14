@@ -15,7 +15,8 @@
 
 
     var theGame,
-        rockDelayCounter = 0;
+        rockDelayCounter = 0,
+        rock;
 
     SlowDownRate = 1;
 
@@ -56,16 +57,15 @@
         this.box2d.removeAllBodies();
     };
 
-	RockManager.prototype.tick = function (sworld) {
+	RockManager.prototype.tick = function (sworld,e) {
 
         this.box2d.update();
 
-        rockDelayCounter++;
-        // delay so it doesn't spawn a rock on every frame
-        if(rockDelayCounter % (5*SlowDownRate) === 0) {  
+        rockDelayCounter += e / 1000;
+        if(rockDelayCounter / (0.08*SlowDownRate) > 1) {  
             rockDelayCounter = 0;
 
-            var rock = this.spawnRock();
+            rock = this.spawnRock();
             sworld.addChild(rock);
             this.box2d.createRock(rock);
         }
