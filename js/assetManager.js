@@ -17,9 +17,12 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
         MUSIC_START = 'assets/music/honor',
         MUSIC_OVER = 'assets/music/liyan',
 
-        SFX_HURT = 'assets/sfx/hurt';
+        SFX_HURT = 'assets/sfx/hurt',
+        SFX_WHIP = 'assets/sfx/tailwhip',
+        SFX_WHIP2 = 'assets/sfx/tailwhip2';
+        SFX_WHIP_S = 'assets/sfx/tailwhip_slow';
 
-        ASSET_COUNT = 16;
+        ASSET_COUNT = 18;
 
 (function (window) {
 
@@ -110,12 +113,20 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
         globalMusic_slow.loop = true;
 
         musicStart = new Audio();
+        musicStart.loop = true;
         musicOver = new Audio();
+        musicOver.loop = true;
 
         sfxHurt = new Audio();
+        sfxWhip = new Audio();
+        sfxWhip2 = new Audio();
+        sfxWhipSlow = new Audio();
         self.loadSound(globalMusic, GAME_MUSIC + audioExtension);
         self.loadSound(globalMusic_slow, GAME_MUSIC_SLOW + audioExtension);
         self.loadSound(sfxHurt, SFX_HURT + audioExtension);
+        self.loadSound(sfxWhip, SFX_WHIP + audioExtension);
+        self.loadSound(sfxWhip2, SFX_WHIP2 + audioExtension);
+        self.loadSound(sfxWhipSlow, SFX_WHIP_S + audioExtension);
         self.loadSound(musicStart, MUSIC_START + audioExtension);
         self.loadSound(musicOver, MUSIC_OVER + audioExtension);
     }
@@ -271,7 +282,7 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
                 [0,0,400*scale,/*240*/117*scale],
                 [0,240*scale,400*scale,133*scale],
                 [0,480*scale,400*scale,157*scale],
-                [0,720+96*scale,400*scale,144*scale]
+                [0,720*scale,400*scale,240*scale]
             ],
             animations: {
                 layer1:[0],

@@ -44,6 +44,13 @@ function _game() {
 		onGameOverScreen,
 		gotPoints,
 		pointsTxt,
+		/* Combo vars */
+		combo = false,
+		comboMul = 1,
+		comboText,
+		comboTime = 0,
+		comboTextList = [],
+		/* Combo vars */
 		startPos = {        
 			x : w/2,
 			y : h/2 + 10 * scale
@@ -86,7 +93,7 @@ function _game() {
 		canvas = document.getElementById('canvas');
 		canvas.width = w;
 		canvas.height = h;
-		//canvas.id = "canvas";
+		canvas.id = "Canvas";
 		left.appendChild(canvas);
 		self.canvas = canvas;
 
@@ -283,6 +290,9 @@ function _game() {
 		bulletTime = false;
 		elapsed = 0; // TIme? needed?
 
+		combo = false;
+		comboMul = 1;
+		comboTime = 0;
 		points = 0;
 		oldPoints = 0;
 		top.removeChild(pointsTxt);
@@ -325,7 +335,20 @@ function _game() {
 		if(!onStartScreen && !onGameOverScreen) {
 
 			if(hero.IsAlive) {
-				points += e / 1000 / SlowDownRate;
+
+				// check if it's not time to reset comboMul
+				if(combo = true) {
+					comboTime += e / 1000;
+					if(comboTime > 5) {
+						comboTime = 0;
+						combo = false;
+						comboMul = 1;
+					}
+				}
+
+				points += e / 1000 / SlowDownRate * comboMul;
+
+
 			} else {
 				musicOver.currentTime = 0;
 				musicOver.play();
@@ -396,6 +419,18 @@ function _game() {
 			// Bad idea, can be done in ealier IF (do it once!), also hardcoded -200 value!
 			if(newScreenPos < -200) {
 				world.x = -200;
+			}
+
+			// Move and remove combo points
+			for(i=0, l=comboTextList.length; i<l; i++) {
+				comboTextList[i].y-=0.7;
+				if(comboTextList[i].startY - comboTextList[i].y > 20) {
+					top.removeChild(comboTextList[i]);
+					comboTextList.splice(i,1);
+                    i--;
+                    l--;
+				}
+
 			}
 
 			
@@ -619,8 +654,43 @@ function _game() {
 		return tempContainer;
     }
 
+    self.combo = function(comboBox, rock) {
+
+    	if(combo) {
+    		comboMul += 1;
+    		comboTime = comboMul / 3;
+    	} else {
+    		combo = true;
+    		comboTime = 0;
+    	}
+    	if(bulletTime == true) {
+    	    sfxWhipSlow.pause();
+            sfxWhipSlow.currentTime = 0;
+            sfxWhipSlow.play();
+    	} else if((Math.floor(Math.random() * 2) + 1) == 1) {
+    	    sfxWhip.pause();
+            sfxWhip.currentTime = 0;
+            sfxWhip.play();
+    	} else {
+    	    sfxWhip2.pause();
+            sfxWhip2.currentTime = 0;
+            sfxWhip2.play();
+    	}
+
+		comboText = new createjs.Text('x'+comboMul, "18px Arial", "#FFF");
+		comboText.x = rock.skin.x | 0;
+		comboText.y = (rock.skin.y - 1.5*rock.skin.spriteSheet._frameHeight) | 0;
+		comboText.startY = comboText.y;
+		comboText.textAlign = "left";
+
+		top.addChild(comboText);
+
+ 		comboTextList.push(comboText);
+    }
+
 	//self.preloadResources();
 	assMan = new AssetManager(this);
+
 };
 
 new _game();

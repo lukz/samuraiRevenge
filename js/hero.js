@@ -177,9 +177,9 @@
         
         if(physOwner !== null && this.IsAlive) {
             //if(physOwner._killed) return false;
-
+            sfxHurt.pause();
+            sfxHurt.currentTime = 0;
             sfxHurt.play();
-            console.log(sfxHurt);
             globalMusic.pause();
             globalMusic_slow.pause();
             

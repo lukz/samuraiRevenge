@@ -35,7 +35,6 @@
             PostSolve: function (bodyA, bodyB, impulse) {
                 var uA = bodyA ? bodyA.GetUserData() : null;
                 var uB = bodyB ? bodyB.GetUserData() : null;
-
                 //if(!uA.skin || !uB.skin)
                 //console.log(uA, uB);
 
@@ -50,7 +49,29 @@
                         uB.onTouch(bodyA, null, impulse);
                     }
                 }
+            },
+
+            EndContact: function (bodyA, bodyB) {
+                var uA = bodyA ? bodyA.GetUserData() : null;
+                var uB = bodyB ? bodyB.GetUserData() : null;
+                //if(!uA.skin || !uB.skin)
+
+                if (uA !== null && uB !== null && uA.onTouch) {
+                    if(uA.name == 'heroComboBox' && uB.skin.comboMaker == false) {
+                        Game.combo(uA,uB);
+                        uB.skin.comboMaker = true;
+                    }
+                }
+                if (uB !== null && uA !== null && uB.onTouch) {
+                    if(uB.name == 'heroComboBox' && uA.skin.comboMaker == false) {
+                        Game.combo(uB,uA);
+                        uA.skin.comboMaker = true;
+                    }
+                }
+
             }
+
+
         });
     };
     RockManager.prototype.reset = function(sworld) {
@@ -90,6 +111,9 @@
         rockS = new BitmapAnimation(spriteSheets[ROCK_SIZE]);
 
         rockS.name = 'rockS';
+
+        // One combo for one rock!
+        rockS.comboMaker = false;
         
         rockS.x = Math.random()*960+20 | 0;
 
@@ -106,6 +130,7 @@
         STEP = 30;
         TIMESTEP = 1/STEP;
         var physHero;
+        var physHeroComboBox;
         var world;
         var lastTimestamp = Date.now();
         var fixedTimestepAccumulator = 0;
@@ -123,20 +148,22 @@
         var setup = function() {
 
             canvas = Game.canvas;
+            //var left = document.getElementById('left');
             //debugCanvas = document.createElement('canvas');
             //debugCanvas.width = Game.width;
             //debugCanvas.height = Game.height;
             //debugCanvas.id = "debugCanvas";
-            //document.body.appendChild(debugCanvas);
+            //left.appendChild(debugCanvas);
 
             context = canvas.getContext('2d');
             //debugContext = debugCanvas.getContext('2d');
 
-            world = new b2World(new b2Vec2(0,10), true);
+            world = new b2World(new b2Vec2(0,8), true);
             //addDebug();
 
             // I need a Hero! .. He's gotta be strong. And he's gotta be fast.
             physHero = addHero(Game.getHero());
+            physHeroComboBox = addHeroComboBox(Game.getHero());
             
             // boundaries - floor
             /*var floorFixture = new b2FixtureDef;
@@ -221,7 +248,40 @@
             var heroIsHere = world.CreateBody(heroBodyDef);
             heroIsHere.CreateFixture(heroFixture);
             heroIsHere.SetUserData(skin);
+                        console.log(heroIsHere);
             return heroIsHere;
+        }
+
+        var addHeroComboBox = function(skin) {
+            var heroComboBoxFixture = new b2FixtureDef;
+            heroComboBoxFixture.density = 0.5;
+            heroComboBoxFixture.friction = 10;
+            heroComboBoxFixture.restitution = 0.1;
+            heroComboBoxFixture.isSensor = true;
+            heroComboBoxFixture.shape = new b2PolygonShape;
+
+            heroComboBoxFixture.shape.SetAsBox(skin.spriteSheet._frameWidth / SCALE / 2 * 3, skin.spriteSheet._frameHeight / SCALE / 2 / 8);
+
+            var heroComboBoxBodyDef = new b2BodyDef;
+            heroComboBoxBodyDef.type = b2Body.b2_staticBody;
+            heroComboBoxBodyDef.position.x = skin.x / SCALE - skin.spriteSheet._frameWidth / SCALE / 2;
+            heroComboBoxBodyDef.position.y = skin.y / SCALE;
+
+            var heroComboBoxIsHere = world.CreateBody(heroComboBoxBodyDef);
+            heroComboBoxIsHere.CreateFixture(heroComboBoxFixture);
+
+            function heroComboBoxUserData() {
+                this.name = 'heroComboBox';
+            };
+            heroComboBoxUserData.prototype.onTouch = function (otherBody, point, impulse) {
+                return true;
+            } 
+
+            heroComboBoxIsHere.SetUserData(new heroComboBoxUserData());
+
+
+            console.log(heroComboBoxIsHere);
+            return heroComboBoxIsHere;
         }
 
         // remove actor and it's skin object
@@ -253,20 +313,25 @@
                 // Update hero position (movement should be calculated here)
                 physHero.SetLinearVelocity(new b2Vec2(0,0));
                 physHero.SetPositionAndAngle(new b2Vec2(Game.getHero().x / SCALE, Game.getHero().y / SCALE), 0);
+                physHeroComboBox.SetPosition(new b2Vec2(
+                        Game.getHero().x / SCALE, 
+                        (Game.getHero().y / SCALE + Game.getHero().spriteSheet._frameHeight / SCALE / 2) + 5 / SCALE));
 
                 // update active actors
                 for(i=0, l=actors.length; i<l; i++) {
                     actors[i].update();
                 }
 
-                world.Step(TIMESTEP, 10, 10);
-                fixedTimestepAccumulator -= STEP;
-                world.ClearForces();
-
                 // DEBUG
                 //world.m_debugDraw.m_sprite.graphics.clear();
                 //world.DrawDebugData();
                 // DEBUG
+
+                world.Step(TIMESTEP, 10, 10);
+                fixedTimestepAccumulator -= STEP;
+                world.ClearForces();
+
+
 
                 if(reset == true) {
                     for(i=0, l=bodies.length; i<l; i++) {
@@ -304,8 +369,15 @@
             TIMESTEP = 1/STEP/stepDevider;
         }
 
+
         var addContactListener = function(callbacks) {
             var listener = new Box2D.Dynamics.b2ContactListener();
+
+
+            if(callbacks.EndContact) listener.EndContact = function (contact) {
+                callbacks.EndContact(contact.GetFixtureA().GetBody(),
+                                    contact.GetFixtureB().GetBody());
+            };
 
             if(callbacks.PostSolve) listener.PostSolve = function (contact, impulse) {
                 callbacks.PostSolve(contact.GetFixtureA().GetBody(),
