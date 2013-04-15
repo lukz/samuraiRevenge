@@ -134,8 +134,6 @@ function _game() {
 		rockManager = new RockManager(this);
 
 		// Start game and game over containers
-		info = new Container();
-		stage.addChild(info);
 
 		// bars, pts
 		top = new Container();
@@ -195,6 +193,7 @@ function _game() {
  		startGame.addChild(blackAlphaShape);
 
 		var txt = new BitmapAnimation(spriteSheets[STRINGS]);
+		txt.snapToPixel = true;
 		txt.x = 45;
 		txt.y = self.height - 285;
 		txt.gotoAndStop("controls");
@@ -206,6 +205,7 @@ function _game() {
 		startGame.addChild(keys);
 
 		txt = new BitmapAnimation(spriteSheets[STRINGS]);
+		txt.snapToPixel = true;
 		txt.x = 290;
 		txt.y = self.height - 97;
 		txt.scaleX = .5;
@@ -213,6 +213,7 @@ function _game() {
 		txt.gotoAndStop("bulletTime");
 		startGame.addChild(txt);
 		txt = new BitmapAnimation(spriteSheets[STRINGS]);
+		txt.snapToPixel = true;
 		txt.x = 290;
 		txt.y = self.height - 40;
 		txt.scaleX = .5;
@@ -220,13 +221,28 @@ function _game() {
 		txt.gotoAndStop("reset");
 		startGame.addChild(txt);
 
+		txt = new BitmapAnimation(spriteSheets[STRINGS_L]);
+		console.log(txt);
+		txt.x = (self.width / 2) - (85*4) - 30;
+		txt.y = self.height / 2 - 190;
+		txt.scaleX = 0.7;
+		txt.scaleY = 0.7;
+		txt.snapToPixel = true;
+		//txt.scaleX = .5;
+		//txt.scaleY = .5;
+		txt.gotoAndStop("samuraiRevenge");
+		startGame.addChild(txt);
+
 		pressSpaceTxt = new BitmapAnimation(spriteSheets[STRINGS]);
+		pressSpaceTxt.snapToPixel = true;
 		pressSpaceTxt.x = self.width - 270;
 		pressSpaceTxt.y = self.height - 30;
 		pressSpaceTxt.scaleX = .5;
 		pressSpaceTxt.scaleY = .5;
 		pressSpaceTxt.gotoAndStop("spaceToPlay");
 		startGame.addChild(pressSpaceTxt);
+
+
 
 		onStartScreen = true;
 
