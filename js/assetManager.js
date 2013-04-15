@@ -314,7 +314,8 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
                 [36*scale,53*scale,5*scale,5*scale],
                 [42*scale,53*scale,5*scale,5*scale],
                 [48*scale,53*scale,5*scale,5*scale],
-                [54*scale,53*scale,5*scale,5*scale]
+                [54*scale,53*scale,5*scale,5*scale],
+                [60*scale,53*scale,5*scale,5*scale]
             ],
             animations: {
                 spaceToPlay:[0],
@@ -335,6 +336,7 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
                 n7:[15],
                 n8:[16],
                 n9:[17],
+                nx:[18],
                 glitchNumber: {
                     frames:[13, 11, 8, 16, 17, 9, 12, 15, 10, 12, 14],
                     next: "glitchNumber",

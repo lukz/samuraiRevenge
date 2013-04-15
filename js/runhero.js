@@ -47,7 +47,9 @@ function _game() {
 		/* Combo vars */
 		combo = false,
 		comboMul = 1,
+		comboTextCont,
 		comboText,
+		comboTextNum,
 		comboTime = 0,
 		comboTextList = [],
 		/* Combo vars */
@@ -576,10 +578,12 @@ function _game() {
 
 	}
 
-    self.numToGfx = function(num) {
+    self.numToGfx = function(num, offset) {
+    	if(typeof(offset)==='undefined') var offset = 70;
+
     	var txtNum = num.toString();
     	var tempContainer = new Container;
-    	var startX = 70;
+    	var startX = offset;
     	var numY = 3;
 
 		for(var i=0; i<txtNum.length; i++) {
@@ -683,15 +687,37 @@ function _game() {
             sfxWhip2.play();
     	}
 
-		comboText = new createjs.Text('x'+comboMul, "18px Arial", "#FFF");
+		/*comboText = new createjs.Text('x'+comboMul, "18px Arial", "#FFF");
 		comboText.x = rock.skin.x | 0;
 		comboText.y = (rock.skin.y - 1.5*rock.skin.spriteSheet._frameHeight) | 0;
 		comboText.startY = comboText.y;
-		comboText.textAlign = "left";
+		comboText.textAlign = "left";*/
 
-		top.addChild(comboText);
+		comboTextCont = new Container();
+		comboTextCont.snapToPixel = true;
 
- 		comboTextList.push(comboText);
+		comboText = new BitmapAnimation(spriteSheets[STRINGS]);
+		comboText.x = rock.skin.x | 0;
+		comboText.y = (rock.skin.y - 1.5*rock.skin.spriteSheet._frameHeight + 6) | 0;
+		comboText.scaleX = 0.35; 
+		comboText.scaleY = 0.35;
+		comboText.gotoAndStop("nx");
+		comboText.snapToPixel = true;
+
+		comboTextCont.addChild(comboText);
+
+		comboTextNum = self.numToGfx(comboMul,21);
+		comboTextNum.x = rock.skin.x | 0;
+		comboTextNum.y = (rock.skin.y - 1.5*rock.skin.spriteSheet._frameHeight) | 0;
+		comboTextNum.scaleX = 0.55;
+		comboTextNum.scaleY = 0.55;
+		comboTextNum.snapToPixel = true;
+		comboTextCont.addChild(comboTextNum);
+
+		comboTextCont.startY = comboTextCont.y;
+
+		top.addChild(comboTextCont);
+ 		comboTextList.push(comboTextCont);
     }
 
 	//self.preloadResources();
