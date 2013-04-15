@@ -90,9 +90,6 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
         }
 
 
-        // ADD PRELOADER INDICATOR!
-
-
         self.loadImage(HERO_IMAGE);
         //self.loadImage(MAP);
         self.loadImage(MAP_PRLX);

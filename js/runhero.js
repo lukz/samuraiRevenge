@@ -115,7 +115,7 @@ function _game() {
 			bg.addChild(tempLayer);
 			parallaxMapLayers.push(tempLayer);
 		}
-		layersCounr = parallaxMapLayers.length;
+		layersCount = parallaxMapLayers.length;
 
 		background = self.createMapBg();
 		bg.addChild(background);
@@ -300,6 +300,10 @@ function _game() {
 		top.addChild(pointsTxt);
 
 		bulletTimeLeft = 100;
+		bulletTimeTxt.text = '';
+		for(i=0, l=bulletTimeLeft/1.6|0; i<=l; i++) {
+ 			bulletTimeTxt.text += '|';
+ 		}
 
 		if(onStartScreen) {
 			stage.removeChild(startGame);
@@ -384,10 +388,12 @@ function _game() {
 			}
 
 			// 1.6 FTW!
-			bulletTimeTxt.text = '';
-			for(i=0, l=bulletTimeLeft/1.6|0; i<=l; i++) {
-	 			bulletTimeTxt.text += '|';
-	 		}
+			if(bulletTime) {
+				bulletTimeTxt.text = '';
+				for(i=0, l=bulletTimeLeft/1.6|0; i<=l; i++) {
+		 			bulletTimeTxt.text += '|';
+		 		}
+			}
 
 			rockManager.tick(world,e);
 			hero.tick();

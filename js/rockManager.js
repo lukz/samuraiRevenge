@@ -16,7 +16,9 @@
 
     var theGame,
         rockDelayCounter = 0,
-        rock;
+        rock,
+        b2vec2O,
+        bodiesToRecycle = [];
 
     SlowDownRate = 1;
 
@@ -27,6 +29,8 @@
     }
 
     RockManager.prototype.initialize = function (game) {
+
+        b2vec2O = new b2Vec2(0,0);
 
         theGame = game;
         this.box2d.setup();
@@ -75,6 +79,7 @@
         });
     };
     RockManager.prototype.reset = function(sworld) {
+        bodiesToRecycle = [];
         this.box2d.removeAllBodies();
     };
 
@@ -86,9 +91,30 @@
         if(rockDelayCounter / (0.08*SlowDownRate) > 1) {  
             rockDelayCounter = 0;
 
-            rock = this.spawnRock();
-            sworld.addChild(rock);
-            this.box2d.createRock(rock);
+
+            if(bodiesToRecycle.length == 0) {
+                // No objects in pool
+                rock = this.spawnRock();
+                sworld.addChild(rock);
+                this.box2d.createRock(rock);
+            } else {
+                // Recycle object
+                bodiesToRecycle[0].comboMaker = false;
+                bodiesToRecycle[0].SetActive(true);
+
+                b2vec2O.x = (Math.random()*960+20 | 0)/30;
+                b2vec2O.y = (-100 - (40 + Math.random()*80 | 0))/30;
+                bodiesToRecycle[0].SetPosition(b2vec2O);
+
+                b2vec2O.x = (8 - Math.random()*16 | 0);
+                b2vec2O.y = (10 - Math.random()*20 | 0);
+                bodiesToRecycle[0].SetLinearVelocity(b2vec2O);
+
+                bodiesToRecycle[0].SetActive(true);
+                this.box2d.pushBody(bodiesToRecycle[0]);
+                bodiesToRecycle.splice(0,1);
+            }
+
         }
 
 	};
@@ -117,7 +143,7 @@
         
         rockS.x = Math.random()*960+20 | 0;
 
-        rockS.y = -100 - (40 + Math.random()*80 | 0);
+        rockS.y = -50 - (40 + Math.random()*80 | 0);
         rockS.snapToPixel = true;
         rockS.gotoAndPlay('fall');
 
@@ -210,15 +236,18 @@
         var createRock = function(skin) {
             var rockFixture = new b2FixtureDef;
             rockFixture.density = 0.5;
-            rockFixture.friction = 10;
-            rockFixture.restitution = 0.1;
+            rockFixture.friction = 5;
+            rockFixture.restitution = 0.5;
             rockFixture.shape = new b2CircleShape((skin.spriteSheet._regX | 0) / SCALE);
             var rockBodyDef = new b2BodyDef;
             rockBodyDef.type = b2Body.b2_dynamicBody;
             rockBodyDef.position.x = skin.x / SCALE;
             rockBodyDef.position.y = skin.y / SCALE;
 
-            rockBodyDef.linearVelocity = new b2Vec2((8 - Math.random()*16 | 0),(10 - Math.random()*20 | 0));
+            b2vec2O.x = (8 - Math.random()*16 | 0);
+            b2vec2O.y = (Math.random()*10 | 0);
+
+            rockBodyDef.linearVelocity = b2vec2O;
 
             var rock = world.CreateBody(rockBodyDef);
             rock.CreateFixture(rockFixture);
@@ -248,7 +277,7 @@
             var heroIsHere = world.CreateBody(heroBodyDef);
             heroIsHere.CreateFixture(heroFixture);
             heroIsHere.SetUserData(skin);
-                        console.log(heroIsHere);
+
             return heroIsHere;
         }
 
@@ -303,19 +332,27 @@
             lastTimestamp = now;
             while(fixedTimestepAccumulator >= STEP) {
                 // remove bodies before world timestep
-                for(i=0, l=bodiesToRemove.length; i<l; i++) {
-                    removeActor(bodiesToRemove[i].GetUserData());
-                    bodiesToRemove[i].SetUserData(null);
-                    world.DestroyBody(bodiesToRemove[i]);
+                if(bodiesToRemove.length != 0) {
+                    for(i=0, l=bodiesToRemove.length; i<l; i++) {
+                        removeActor(bodiesToRemove[i].GetUserData());
+                        bodiesToRemove[i].SetUserData(null);
+                        world.DestroyBody(bodiesToRemove[i]);
+                    }
+                    bodiesToRemove = [];
                 }
-                bodiesToRemove = [];
 
                 // Update hero position (movement should be calculated here)
-                physHero.SetLinearVelocity(new b2Vec2(0,0));
-                physHero.SetPositionAndAngle(new b2Vec2(Game.getHero().x / SCALE, Game.getHero().y / SCALE), 0);
-                physHeroComboBox.SetPosition(new b2Vec2(
-                        Game.getHero().x / SCALE, 
-                        (Game.getHero().y / SCALE + Game.getHero().spriteSheet._frameHeight / SCALE / 2) + 5 / SCALE));
+                b2vec2O.x = 0; b2vec2O.y = 0;
+                physHero.SetLinearVelocity(b2vec2O);
+
+                b2vec2O.x = Game.getHero().x / SCALE;
+                b2vec2O.y = Game.getHero().y / SCALE;
+                physHero.SetPositionAndAngle(b2vec2O, 0);
+
+
+                b2vec2O.x = Game.getHero().x / SCALE;
+                b2vec2O.y = (Game.getHero().y / SCALE + Game.getHero().spriteSheet._frameHeight / SCALE / 2) + 5 / SCALE;
+                physHeroComboBox.SetPosition(b2vec2O);
 
                 // update active actors
                 for(i=0, l=actors.length; i<l; i++) {
@@ -345,7 +382,8 @@
                 // Remove rocks falled from screen
                 for(i=0, l=bodies.length; i<l; i++) {
                     if(bodies[i].GetUserData().skin.y > Game.height) {
-                        bodiesToRemove.push(bodies[i]);
+                        bodies[i].SetActive(false);
+                        bodiesToRecycle.push(bodies[i]);
                         bodies.splice(i,1);
                         i--;
                         l--;
@@ -369,6 +407,9 @@
             TIMESTEP = 1/STEP/stepDevider;
         }
 
+        var pushBody = function(body) {
+            bodies.push(body);
+        }
 
         var addContactListener = function(callbacks) {
             var listener = new Box2D.Dynamics.b2ContactListener();
@@ -395,7 +436,8 @@
             addContactListener: addContactListener,
             removeAllBodies: removeAllBodies,
             //pauseResume: pauseResume,
-            devideStep: devideStep
+            devideStep: devideStep,
+            pushBody: pushBody
         }
     })();
 
