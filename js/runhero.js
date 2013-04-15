@@ -292,7 +292,7 @@ function _game() {
 
 		combo = false;
 		comboMul = 1;
-		comboTime = 0;
+		comboTime = 999;
 		points = 0;
 		oldPoints = 0;
 		top.removeChild(pointsTxt);
