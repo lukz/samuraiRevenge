@@ -14,6 +14,7 @@ var 	BASE_WIDTH = 320,
     var KEYCODE_D = 68;
     var KEYCODE_CTRL = 17;
     var KEYCODE_SPACE = 32;
+    var KEYCODE_M = 77;
 
 function _game() {
 
@@ -573,6 +574,24 @@ function _game() {
                 hero.BulletTimeMoveHelper = 1;
                 hero._animation.frequency = 4;
                 rockManager.box2d.devideStep(SlowDownRate);
+                break;
+			 case KEYCODE_M:
+			 	globalMusic.muted = !globalMusic.muted;
+			 	globalMusic_slow.muted = !globalMusic_slow.muted;
+			 	musicStart.muted = !musicStart.muted;
+			 	musicOver.muted = !musicOver.muted;
+			 	sfxHurt.muted = !sfxHurt.muted;
+			 	sfxWhip.muted = !sfxWhip.muted;
+			 	sfxWhip2.muted = !sfxWhip2.muted;
+			 	sfxWhipSlow.muted = !sfxWhipSlow.muted;
+
+			 	if(globalMusic.muted) {
+			 		var mute = document.getElementById('muted');
+			 		mute.style.display = 'inline';
+			 	} else {
+			 		var mute = document.getElementById('muted');
+			 		mute.style.display = 'none';
+			 	}
                 break;
         }
 
