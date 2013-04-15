@@ -375,15 +375,25 @@ function _game() {
 				top.addChild(pointsTxt);
 			}
 
+			if(!bulletTime && bulletTimeLeft < 100) {
+				bulletTimeLeft+= e*0.5 /100;
+
+				bulletTimeTxt.text = '';
+				for(i=0, l=bulletTimeLeft/1.6|0; i<=l; i++) {
+		 			bulletTimeTxt.text += '|';
+		 		}
+			}
+
 			if(bulletTime && (bulletTimeLeft > 0) && hero.IsAlive) {
-				bulletTimeLeft-= e /100;
+				bulletTimeLeft-= e*2 /100;
+
 			} else if(bulletTime && !hero.IsAlive) {
 				//self.handleKeyUp(e.keyCode = KEYCODE_CTRL);
 				// do smth when collision when in bullet time?
 				// cos wymyslic jak trzyma sie czas a konczy sie bullet timeline
 			}
 
-			if(bulletTime && (bulletTimeLeft < 0)) {
+			if(bulletTime && (bulletTimeLeft <= 0)) {
 				bulletTime = false;
                 SlowDownRate = 1;
                 hero._animation.frequency = 4;
