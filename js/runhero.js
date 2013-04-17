@@ -45,6 +45,8 @@ function _game() {
 		onGameOverScreen,
 		gotPoints,
 		pointsTxt,
+		highscore = 0,
+		bestCombo = 0,
 		/* Combo vars */
 		combo = false,
 		comboMul = 1,
@@ -53,6 +55,9 @@ function _game() {
 		comboTextNum,
 		comboTime = 0,
 		comboTextList = [],
+		comboBestOverGame = 0,
+		bestComboTempOver,
+		highscoreTempOver,
 		/* Combo vars */
 		startPos = {        
 			x : w/2,
@@ -74,6 +79,7 @@ function _game() {
 
 	self.initializeGame = function() {
 		musicStart.play();
+		self.highscoreCheck();
 
 		// get assets from asset manager
 		assets = assMan.getAssets();
@@ -189,7 +195,7 @@ function _game() {
 		graphics = new createjs.Graphics().beginFill("#000").drawRect(0, 33, self.width, self.height - 33);
  		blackAlphaShape = new createjs.Shape(graphics);
  		blackAlphaShape.cache(0, 33, self.width, self.height - 33);
- 		blackAlphaShape.alpha = 0.5;
+ 		blackAlphaShape.alpha = 0.3;
  		startGame.addChild(blackAlphaShape);
 
 		var txt = new BitmapAnimation(spriteSheets[STRINGS]);
@@ -221,15 +227,19 @@ function _game() {
 		txt.gotoAndStop("reset");
 		startGame.addChild(txt);
 
+
+		graphics = new createjs.Graphics().beginFill("#000000").drawRect(0, self.height / 2 - 195, self.width, 33+20);
+ 		shape = new createjs.Shape(graphics);
+ 		shape.cache(0, self.height / 2 - 195, self.width, 33+20);
+ 		shape.alpha = 0.8;
+ 		startGame.addChild(shape);
+
 		txt = new BitmapAnimation(spriteSheets[STRINGS_L]);
-		console.log(txt);
 		txt.x = (self.width / 2) - (85*4) - 30;
 		txt.y = self.height / 2 - 190;
 		txt.scaleX = 0.7;
 		txt.scaleY = 0.7;
 		txt.snapToPixel = true;
-		//txt.scaleX = .5;
-		//txt.scaleY = .5;
 		txt.gotoAndStop("samuraiRevenge");
 		startGame.addChild(txt);
 
@@ -242,13 +252,28 @@ function _game() {
 		pressSpaceTxt.gotoAndStop("spaceToPlay");
 		startGame.addChild(pressSpaceTxt);
 
+		var highscoreTemp = self.getHighscoreText();
+		highscoreTemp.y = self.height - 255;
+		highscoreTemp.x = self.width / 2 + 50;
+		highscoreTemp.snapToPixel = true;
+		startGame.addChild(highscoreTemp);
 
+		var bestComboTemp = self.getBestComboText();
+		bestComboTemp.y = self.height - 205;
+		bestComboTemp.x = self.width / 2 + 50;
+		bestComboTemp.snapToPixel = true;
+		startGame.addChild(bestComboTemp);
 
 		onStartScreen = true;
 
 		// GAMEOVER Screen
 		gameOver = new Container();
-		gameOver.addChild(blackAlphaShape);
+
+		graphics = new createjs.Graphics().beginFill("#000").drawRect(0, 33, self.width, self.height - 33);
+ 		blackAlphaShape2 = new createjs.Shape(graphics);
+ 		blackAlphaShape2.cache(0, 33, self.width, self.height - 33);
+ 		blackAlphaShape2.alpha = 0.5;
+		gameOver.addChild(blackAlphaShape2);
 
 		txt = new BitmapAnimation(spriteSheets[STRINGS_L]);
 		txt.x = self.width / 2 - (53 * scale * 5 / 2)| 0;
@@ -309,6 +334,8 @@ function _game() {
 		bulletTime = false;
 		elapsed = 0; // TIme? needed?
 
+		comboBestOverGame = 0;
+
 		combo = false;
 		comboMul = 1;
 		comboTime = 999;
@@ -334,6 +361,8 @@ function _game() {
 			musicOver.pause();
 			gameOver.removeChild(gotPoints);
 			stage.removeChild(gameOver);
+			gameOver.removeChild(highscoreTempOver);
+			gameOver.removeChild(bestComboTempOver);
 		}
 		onGameOverScreen = false;
 
@@ -361,6 +390,9 @@ function _game() {
 
 				// check if it's not time to reset comboMul
 				if(combo = true) {
+					if(comboMul > comboBestOverGame)
+						comboBestOverGame = comboMul;
+
 					comboTime += e / 1000;
 					if(comboTime > 5) {
 						comboTime = 0;
@@ -373,6 +405,17 @@ function _game() {
 
 
 			} else {
+				// Highscore and best combo - store in cookies
+				if(oldPoints > highscore) {
+					highscore = oldPoints;
+					self.newHighscore(highscore);
+				}
+				if(comboBestOverGame > bestCombo) {
+					bestCombo = comboBestOverGame;
+					self.newBestCombo(bestCombo);
+				}
+
+
 				musicOver.currentTime = 0;
 				musicOver.play();
 				onGameOverScreen = true;
@@ -381,6 +424,19 @@ function _game() {
 				gotPoints.x = (self.width / 2 - (53 * scale * 5 / 2)) + 115| 0;
 				gotPoints.y = (self.height / 2 + 20 | 0) - 3;
 				gameOver.addChild(gotPoints);
+
+				highscoreTempOver = self.getHighscoreText();
+				highscoreTempOver.y = self.height - 255;
+				highscoreTempOver.x = self.width / 2 + 50;
+				highscoreTempOver.snapToPixel = true;
+				gameOver.addChild(highscoreTempOver);
+
+				bestComboTempOver = self.getBestComboText();
+				bestComboTempOver.y = self.height - 210;
+				bestComboTempOver.x = self.width / 2 + 50;
+				bestComboTempOver.snapToPixel = true;
+				gameOver.addChild(bestComboTempOver);
+
 			}
 
 			if((points | 0)*10 > oldPoints) {
@@ -713,7 +769,7 @@ function _game() {
 
     	if(combo) {
     		comboMul += 1;
-    		comboTime = comboMul / 3;
+    		comboTime = comboMul / 4;
     	} else {
     		combo = true;
     		comboTime = 0;
@@ -760,10 +816,107 @@ function _game() {
 		comboTextCont.addChild(comboTextNum);
 
 		comboTextCont.startY = comboTextCont.y;
-
 		top.addChild(comboTextCont);
  		comboTextList.push(comboTextCont);
     }
+
+	self.highscoreCheck = function(comboBox, rock) {
+		var new_highscore=getCookie("highscore");
+		var new_bestCombo=getCookie("bestcombo");
+
+		if (new_highscore != null) {
+			highscore = new_highscore;
+		} else {
+			setCookie("highscore",0,365*6);
+		}
+
+		if (new_bestCombo != null) {
+			bestCombo = new_bestCombo;
+		} else {
+			setCookie("bestcombo",0,365*6);
+		}
+	}
+
+	self.newHighscore = function(newHighscore) {
+		var old_highscore=getCookie("highscore");
+
+		if(old_highscore == null)
+			old_highscore = 0;
+
+		if (old_highscore != null && old_highscore<newHighscore) {
+			setCookie("highscore",newHighscore,365*6);
+		}
+	}
+
+	self.newBestCombo = function(newBestcombo) {
+		var old_bestcombo=getCookie("bestcombo");
+
+		if(old_bestcombo == null)
+			old_bestcombo = 0;
+
+		if (old_bestcombo != null && old_bestcombo<newBestcombo) {
+			setCookie("bestcombo",newBestcombo,365*6);
+		}
+	}
+
+	self.getHighscoreText = function() {
+		var highscoreCont = new Container();
+		highscoreCont.snapToPixel = true;
+
+		var graphics = new createjs.Graphics().beginFill("#000000").moveTo(0,10*scale).lineTo(-15*scale,10*scale).lineTo(0*scale,-5*scale).lineTo(0*scale,0*scale).drawRect(0, -5*scale, self.width - (self.width / 2 + 50), 15*scale);;
+ 		var shape = new createjs.Shape(graphics);
+ 		shape.cache(-15*scale,-15*scale, self.width - (self.width / 2 + 50) + (15*scale), 30*scale);
+ 		shape.alpha = 0.8;
+ 		highscoreCont.addChild(shape);
+
+		highscoreText = new BitmapAnimation(spriteSheets[STRINGS]);
+		highscoreText.gotoAndStop("highScore");
+		highscoreText.snapToPixel = true;
+		highscoreText.scaleX = .6;
+		highscoreText.scaleY = .6;
+		highscoreText.y = 3
+
+		highscoreCont.addChild(highscoreText);
+
+		highscoreNum = self.numToGfx(highscore,174);
+		highscoreNum.y = -10;
+		highscoreNum.snapToPixel = true;
+
+		highscoreCont.addChild(highscoreNum);
+		return highscoreCont;
+	}
+
+	self.getBestComboText = function() {
+		var comboCont = new Container();
+		comboCont.snapToPixel = true;
+
+		var graphics = new createjs.Graphics().beginFill("#000000").moveTo(0,10*scale).lineTo(-15*scale,10*scale).lineTo(0*scale,-5*scale).lineTo(0*scale,0*scale).drawRect(0, -5*scale, self.width - (self.width / 2 + 50), 15*scale);;
+ 		var shape = new createjs.Shape(graphics);
+ 		shape.cache(-15*scale,-15*scale, self.width - (self.width / 2 + 50) + (15*scale), 30*scale);
+ 		shape.alpha = 0.8;
+ 		comboCont.addChild(shape);
+
+		comboText = new BitmapAnimation(spriteSheets[STRINGS]);
+		comboText.gotoAndStop("bestCombo");
+		comboText.snapToPixel = true;
+		comboText.scaleX = .6;
+		comboText.scaleY = .6;
+		comboText.y = 3
+
+		comboCont.addChild(comboText);
+
+		comboNum = self.numToGfx(bestCombo,184);
+		comboNum.y = -10;
+		comboNum.snapToPixel = true;
+
+		comboCont.addChild(comboNum);
+
+		//comboCont.cache();
+
+		return comboCont;
+
+	}
+    
 
 	//self.preloadResources();
 	assMan = new AssetManager(this);

@@ -173,7 +173,7 @@
         // box2d world setup
         var setup = function() {
 
-            canvas = Game.canvas;
+            //canvas = Game.canvas;
             //var left = document.getElementById('left');
             //debugCanvas = document.createElement('canvas');
             //debugCanvas.width = Game.width;
@@ -181,7 +181,7 @@
             //debugCanvas.id = "debugCanvas";
             //left.appendChild(debugCanvas);
 
-            context = canvas.getContext('2d');
+            //context = canvas.getContext('2d');
             //debugContext = debugCanvas.getContext('2d');
 
             world = new b2World(new b2Vec2(0,8), true);
@@ -266,7 +266,7 @@
             heroFixture.restitution = 1;
             heroFixture.shape = new b2PolygonShape;
 
-            heroFixture.shape.SetAsBox(skin.spriteSheet._frameWidth / SCALE / 2, skin.spriteSheet._frameHeight / SCALE / 2);
+            heroFixture.shape.SetAsBox(skin.spriteSheet._frameWidth / SCALE / 2 *0.8, skin.spriteSheet._frameHeight / SCALE / 2 * 0.9);
 
             var heroBodyDef = new b2BodyDef;
             heroBodyDef.type = b2Body.b2_dynamicBody;
@@ -289,7 +289,8 @@
             heroComboBoxFixture.isSensor = true;
             heroComboBoxFixture.shape = new b2PolygonShape;
 
-            heroComboBoxFixture.shape.SetAsBox(skin.spriteSheet._frameWidth / SCALE / 2 * 3, skin.spriteSheet._frameHeight / SCALE / 2 / 8);
+            //heroComboBoxFixture.shape.SetAsBox(skin.spriteSheet._frameWidth / SCALE / 2 * 3, skin.spriteSheet._frameHeight / SCALE / 2 / 8);
+            heroComboBoxFixture.shape.SetAsBox(skin.spriteSheet._frameWidth / SCALE / 2 * 2.5, skin.spriteSheet._frameHeight / SCALE);
 
             var heroComboBoxBodyDef = new b2BodyDef;
             heroComboBoxBodyDef.type = b2Body.b2_staticBody;
@@ -351,7 +352,7 @@
 
 
                 b2vec2O.x = Game.getHero().x / SCALE;
-                b2vec2O.y = (Game.getHero().y / SCALE + Game.getHero().spriteSheet._frameHeight / SCALE / 2) + 5 / SCALE;
+                b2vec2O.y = (Game.getHero().y / SCALE );
                 physHeroComboBox.SetPosition(b2vec2O);
 
                 // update active actors
