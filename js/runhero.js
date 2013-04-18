@@ -467,7 +467,7 @@ function _game() {
 				if(onShowLevelScreen) {
 					if(screenState == -1) {
 						ShowLevelScreenDelay+= e / 1000;
-						if(ShowLevelScreenDelay > 1) {
+						if(ShowLevelScreenDelay > 1.5) {
 							ShowLevelScreenDelay = 0;
 							screenState++;
 						}
@@ -505,7 +505,7 @@ function _game() {
 						lvlText.gotoAndStop(lvlSprite);
 						lvlText.snapToPixel = true;
 						lvlText.y = ((self.height/5) + (15*scale - lvlText.getBounds().height)/2) | 0;
-						lvlText.x = self.width + 500;
+						lvlText.x = self.width;
 						top.addChild(lvlText);
 
 	                	screenState = 1;
