@@ -99,7 +99,8 @@
                 this.box2d.createRock(rock);
             } else {
                 // Recycle object
-                bodiesToRecycle[0].comboMaker = false;
+                bodiesToRecycle[0].GetUserData().skin.comboMaker = false;
+
                 bodiesToRecycle[0].SetActive(true);
 
                 b2vec2O.x = (Math.random()*960+20 | 0)/30;
@@ -140,7 +141,7 @@
 
         // One combo for one rock!
         rockS.comboMaker = false;
-        
+
         rockS.x = Math.random()*960+20 | 0;
 
         rockS.y = -50 - (40 + Math.random()*80 | 0);
