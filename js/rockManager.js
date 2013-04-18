@@ -18,7 +18,8 @@
         rockDelayCounter = 0,
         rock,
         b2vec2O,
-        bodiesToRecycle = [];
+        bodiesToRecycle = [],
+        lastSpawnedX = 0;
 
     SlowDownRate = 1;
 
@@ -100,15 +101,18 @@
             } else {
                 // Recycle object
                 bodiesToRecycle[0].GetUserData().skin.comboMaker = false;
-
                 bodiesToRecycle[0].SetActive(true);
 
-                b2vec2O.x = (Math.random()*960+20 | 0)/30;
-                b2vec2O.y = (-100 - (40 + Math.random()*80 | 0))/30;
+                b2vec2O.x = (Math.random()*960+20)/30;
+                if(Math.abs(lastSpawnedX - b2vec2O.x) < 3) {
+                    b2vec2O.x = (Math.random()*960+20)/30;}
+                lastSpawnedX = b2vec2O.x;
+
+                b2vec2O.y =  ((40 + Math.random()*80 | 0) - 100)/30;
                 bodiesToRecycle[0].SetPosition(b2vec2O);
 
                 b2vec2O.x = (8 - Math.random()*16 | 0);
-                b2vec2O.y = (10 - Math.random()*20 | 0);
+                b2vec2O.y = (Math.random()*10 | 0);
                 bodiesToRecycle[0].SetLinearVelocity(b2vec2O);
 
                 bodiesToRecycle[0].SetActive(true);
@@ -142,9 +146,14 @@
         // One combo for one rock!
         rockS.comboMaker = false;
 
-        rockS.x = Math.random()*960+20 | 0;
+        rockS.x = Math.random()*960+20;
 
-        rockS.y = -50 - (40 + Math.random()*80 | 0);
+        if(Math.abs(lastSpawnedX - rockS.x) < 3*30)
+            rockS.x = Math.random()*960+20;
+
+        lastSpawnedX = rockS.x;
+
+        rockS.y = (40 + Math.random()*80 | 0) - 100;
         rockS.snapToPixel = true;
         rockS.gotoAndPlay('fall');
 
@@ -185,7 +194,7 @@
             //context = canvas.getContext('2d');
             //debugContext = debugCanvas.getContext('2d');
 
-            world = new b2World(new b2Vec2(0,8), true);
+            world = new b2World(new b2Vec2(0,15), true);
             //addDebug();
 
             // I need a Hero! .. He's gotta be strong. And he's gotta be fast.
@@ -309,9 +318,6 @@
             } 
 
             heroComboBoxIsHere.SetUserData(new heroComboBoxUserData());
-
-
-            console.log(heroComboBoxIsHere);
             return heroComboBoxIsHere;
         }
 
