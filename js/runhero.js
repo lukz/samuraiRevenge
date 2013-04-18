@@ -44,6 +44,7 @@ function _game() {
 		onStartScreen,
 		onGameOverScreen,
 		onShowLevelScreen = false,
+		ShowLevelScreenDelay = 0,
 		lvlShape,
 		lvlText,
 		lvlSlowDownRate = 1,
@@ -464,6 +465,14 @@ function _game() {
 
 
 				if(onShowLevelScreen) {
+					if(screenState == -1) {
+						ShowLevelScreenDelay+= e / 1000;
+						if(ShowLevelScreenDelay > 1) {
+							ShowLevelScreenDelay = 0;
+							screenState++;
+						}
+					}
+
 	                if(screenState == 0) {
 	                	// Create objects necessary to show level
 	                	var lvlSprite;
@@ -507,7 +516,7 @@ function _game() {
 
 	                	lvlText.x -= e/lvlSlowDownRate ;
 
-	                	if(lvlText.x <= (self.width/2) + 70 && lvlText.x >= (self.width/2) - 70) {
+	                	if(lvlText.x <= (self.width/2) + 80 && lvlText.x >= (self.width/2) - 80) {
 	                		lvlSlowDownRate = 4;
 	                		SlowDownRate = 2;
 	                		hero._animation.frequency = 8;
@@ -532,7 +541,7 @@ function _game() {
 	                	top.removeChild(lvlShape);
 	                	onShowLevelScreen = false;
 	                	self.onShowLevelScreen = onShowLevelScreen;
-	                	screenState = 0;
+	                	screenState = -1;
 	                }
 
 				}
