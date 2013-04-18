@@ -43,10 +43,18 @@ function _game() {
 		pressSpaceTxt,
 		onStartScreen,
 		onGameOverScreen,
+		onShowLevelScreen = false,
+		lvlShape,
+		lvlText,
+		lvlSlowDownRate = 1,
+		screenState = 0,
 		gotPoints,
 		pointsTxt,
 		highscore = 0,
 		bestCombo = 0,
+		level = 1,
+		levelDifficulty = [0.15,0.11,0.08,0.06,0.04],
+		levelPoints = [0,250,1000,3000,5000,9999999999],
 		/* Combo vars */
 		combo = false,
 		comboMul = 1,
@@ -110,6 +118,11 @@ function _game() {
 		stage = new Stage(canvas);
 		this.stage = stage;
 
+		self.level = level;
+		self.levelDifficulty = levelDifficulty;
+		self.onShowLevelScreen = self;
+		self.levelPoints = levelPoints;
+		self.screenState = screenState;
 		/**
 		 ** Create paralax bg
 		 **/
@@ -334,6 +347,17 @@ function _game() {
 		bulletTime = false;
 		elapsed = 0; // TIme? needed?
 
+		level = 1;
+		self.level = level;
+		onShowLevelScreen = true;
+		self.onShowLevelScreen = onShowLevelScreen;
+		screenState = 0;
+
+		if(top.getChildIndex(lvlText) > -1)
+			top.removeChild(lvlText);
+		if(top.getChildIndex(lvlShape) > -1)
+			top.removeChild(lvlShape);
+
 		comboBestOverGame = 0;
 
 		combo = false;
@@ -382,7 +406,6 @@ function _game() {
 	{
 		//stats.begin(); // DEBUG
 		elapsed = e / 1000 / SlowDownRate;
-	
 
 		if(!onStartScreen && !onGameOverScreen) {
 
@@ -403,6 +426,129 @@ function _game() {
 
 				points += e / 1000 / SlowDownRate * comboMul;
 
+				if((points | 0)*10 > oldPoints) {
+					oldPoints = (points | 0)*10;
+
+					top.removeChild(pointsTxt);
+					pointsTxt = self.numToGfx(oldPoints);
+					top.addChild(pointsTxt);
+				}
+
+				if(!bulletTime && bulletTimeLeft < 100) {
+					bulletTimeLeft+= e*0.5 /100;
+
+					bulletTimeTxt.text = '';
+					for(i=0, l=bulletTimeLeft/1.6|0; i<=l; i++) {
+			 			bulletTimeTxt.text += '|';
+			 		}
+				}
+
+				if(bulletTime && (bulletTimeLeft > 0) && !onShowLevelScreen) {
+					bulletTimeLeft-= e*2 /100;
+				}
+
+				if(bulletTime && (bulletTimeLeft <= 0)) {
+					bulletTime = false;
+	                SlowDownRate = 1;
+	                hero._animation.frequency = 4;
+	                rockManager.box2d.devideStep(SlowDownRate);
+				}
+
+				// 1.6 FTW!
+				if(bulletTime) {
+					bulletTimeTxt.text = '';
+					for(i=0, l=bulletTimeLeft/1.6|0; i<=l; i++) {
+			 			bulletTimeTxt.text += '|';
+			 		}
+				}
+
+
+				if(onShowLevelScreen) {
+	                if(screenState == 0) {
+	                	// Create objects necessary to show level
+	                	var lvlSprite;
+	                	switch(level) {
+	                		case 1:
+	                			lvlSprite = 'easy';
+	                			break;
+	                		break;
+	                		case 2:
+	                			lvlSprite = 'medium';
+	                			break;
+	                		break;
+	                		case 3:
+	                			lvlSprite = 'hard';
+	                			break;
+	                		break;
+	                		case 4:
+	                			lvlSprite = 'insane';
+	                			break;
+	                		break;
+	                	}
+
+            			var lvlGraphics = new createjs.Graphics().beginFill("#000000").drawRect(0, (self.height/5) | 0, self.width, 15*scale);
+						lvlShape = new createjs.Shape(lvlGraphics);
+						lvlShape.cache(0, (self.height/5) | 0, self.width, 15*scale);
+						lvlShape.alpha = 0.9;
+						top.addChild(lvlShape);
+
+						lvlText = new BitmapAnimation(spriteSheets[STRINGS]);
+						lvlText.gotoAndStop(lvlSprite);
+						lvlText.snapToPixel = true;
+						lvlText.y = ((self.height/5) + (15*scale - lvlText.getBounds().height)/2) | 0;
+						lvlText.x = self.width + 500;
+						top.addChild(lvlText);
+
+	                	screenState = 1;
+	                }
+
+	                if(screenState == 1) {
+	                	// Move show level objects over screen
+
+	                	lvlText.x -= e/lvlSlowDownRate ;
+
+	                	if(lvlText.x <= (self.width/2) + 70 && lvlText.x >= (self.width/2) - 70) {
+	                		lvlSlowDownRate = 4;
+	                		SlowDownRate = 2;
+	                		hero._animation.frequency = 8;
+	                		bulletTime = true;
+	                		rockManager.box2d.devideStep(SlowDownRate);
+	                	} else {
+	                		lvlSlowDownRate = 1;
+	                		SlowDownRate = 1;
+	                		hero._animation.frequency = 4;
+	                		bulletTime = false;
+	                		rockManager.box2d.devideStep(SlowDownRate);
+	                	}
+	                		
+	                	if(lvlText.x < -lvlText.getBounds().width) {
+	                		screenState = 2;
+	                	}
+	                }
+
+	                if(screenState == 2) {
+	                	// Remove objects and return to game
+	                	top.removeChild(lvlText);
+	                	top.removeChild(lvlShape);
+	                	onShowLevelScreen = false;
+	                	self.onShowLevelScreen = onShowLevelScreen;
+	                	screenState = 0;
+	                }
+
+				}
+
+				if(!onShowLevelScreen && levelPoints[level] <= oldPoints) {
+					bulletTime = false;
+	                SlowDownRate = 1;
+	                hero._animation.frequency = 4;
+	                rockManager.box2d.devideStep(SlowDownRate);
+
+					level++;
+					self.level = level;
+
+					onShowLevelScreen = true;
+					self.onShowLevelScreen = onShowLevelScreen;
+				}
 
 			} else {
 				// Highscore and best combo - store in cookies
@@ -415,6 +561,12 @@ function _game() {
 					self.newBestCombo(bestCombo);
 				}
 
+				if(bulletTime) {
+					bulletTime = false;
+	                SlowDownRate = 1;
+	                hero._animation.frequency = 4;
+	                rockManager.box2d.devideStep(SlowDownRate);
+				}
 
 				musicOver.currentTime = 0;
 				musicOver.play();
@@ -439,46 +591,6 @@ function _game() {
 
 			}
 
-			if((points | 0)*10 > oldPoints) {
-				oldPoints = (points | 0)*10;
-
-				top.removeChild(pointsTxt);
-				pointsTxt = self.numToGfx(oldPoints);
-				top.addChild(pointsTxt);
-			}
-
-			if(!bulletTime && bulletTimeLeft < 100) {
-				bulletTimeLeft+= e*0.5 /100;
-
-				bulletTimeTxt.text = '';
-				for(i=0, l=bulletTimeLeft/1.6|0; i<=l; i++) {
-		 			bulletTimeTxt.text += '|';
-		 		}
-			}
-
-			if(bulletTime && (bulletTimeLeft > 0) && hero.IsAlive) {
-				bulletTimeLeft-= e*2 /100;
-
-			} else if(bulletTime && !hero.IsAlive) {
-				//self.handleKeyUp(e.keyCode = KEYCODE_CTRL);
-				// do smth when collision when in bullet time?
-				// cos wymyslic jak trzyma sie czas a konczy sie bullet timeline
-			}
-
-			if(bulletTime && (bulletTimeLeft <= 0)) {
-				bulletTime = false;
-                SlowDownRate = 1;
-                hero._animation.frequency = 4;
-                rockManager.box2d.devideStep(SlowDownRate);
-			}
-
-			// 1.6 FTW!
-			if(bulletTime) {
-				bulletTimeTxt.text = '';
-				for(i=0, l=bulletTimeLeft/1.6|0; i<=l; i++) {
-		 			bulletTimeTxt.text += '|';
-		 		}
-			}
 
 			rockManager.tick(world,e);
 			hero.tick();
@@ -607,7 +719,7 @@ function _game() {
                 hero.isJumping = true;
                 break;
             case KEYCODE_CTRL:
-            	if(hero.IsAlive && !bulletTime && (bulletTimeLeft > 0)) {
+            	if(hero.IsAlive && !bulletTime && (bulletTimeLeft > 0) && !onShowLevelScreen) {
                 	bulletTime = true;
                 	SlowDownRate = 2;
                 	hero.BulletTimeMoveHelper = 1.4;

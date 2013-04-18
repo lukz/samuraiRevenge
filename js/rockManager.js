@@ -89,7 +89,7 @@
         this.box2d.update();
 
         rockDelayCounter += e / 1000;
-        if(rockDelayCounter / (0.08*SlowDownRate) > 1) {  
+        if(!Game.onShowLevelScreen && (rockDelayCounter / (Game.levelDifficulty[Game.level]*SlowDownRate) > 1)) {  
             rockDelayCounter = 0;
 
 

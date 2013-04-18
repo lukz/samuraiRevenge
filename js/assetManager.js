@@ -318,7 +318,11 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
                 [60*scale,53*scale,5*scale,5*scale],
                 //New strings
                 [0,59*scale,85*scale,5*scale],
-                [0,65*scale,59*scale,5*scale]
+                [0,65*scale,59*scale,5*scale], // [20]
+                [0,83*scale,23*scale,5*scale],
+                [0,89*scale,31*scale,5*scale],
+                [0,95*scale,23*scale,5*scale],
+                [0,101*scale,47*scale,5*scale]
             ],
             animations: {
                 spaceToPlay:[0],
@@ -331,6 +335,10 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
                 highScore:[7],
                 samuraiRevenge:[19],
                 bestCombo:[20],
+                easy:[21],
+                medium:[22],
+                hard:[23],
+                insane:[24],
                 n0:[8],
                 n1:[9],
                 n2:[10],
@@ -388,7 +396,12 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
                 [54*scale,53*scale,5*scale,5*scale],
                 [60*scale,53*scale,5*scale,5*scale],
                 //New strings
-                [0,59*scale,85*scale,5*scale]
+                [0,59*scale,85*scale,5*scale],
+                [0,65*scale,59*scale,5*scale], // [20]
+                [0,83*scale,23*scale,5*scale],
+                [0,89*scale,31*scale,5*scale],
+                [0,95*scale,23*scale,5*scale],
+                [0,101*scale,47*scale,5*scale]
             ],
             animations: {
                 spaceToPlay:[0],
@@ -400,6 +413,11 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
                 reset:[6],
                 highScore:[7],
                 samuraiRevenge:[19],
+                bestCombo:[20],
+                easy:[21],
+                medium:[22],
+                hard:[23],
+                insane:[24],
                 n0:[8],
                 n1:[9],
                 n2:[10],
