@@ -54,8 +54,8 @@ function _game() {
 		highscore = 0,
 		bestCombo = 0,
 		level = 1,
-		levelDifficulty = [0.15,0.11,0.08,0.06,0.04],
-		levelPoints = [0,250,1000,3000,5000,9999999999],
+		levelDifficulty = [0.15,0.11,0.08,0.06/*,0.04*/],
+		levelPoints = [0,250,1000,3000,/*5000,*/9999999999],
 		/* Combo vars */
 		combo = false,
 		comboMul = 1,
