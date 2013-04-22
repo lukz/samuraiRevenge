@@ -175,7 +175,6 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
     // and initialize the game, if so
     self.onLoadedAsset = function(e) {
         ++loadedAssets;
-        console.log("asset");
         
         bar.scaleX = (loaderWidth/ASSET_COUNT)*loadedAssets | 0;
         amStage.update();
@@ -194,9 +193,7 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
         amStage.removeChild(loaderBar);
         amStage.addChild(loaderBg);
         amStage.addChild(loaderBar);
-        //amStage.removeAllChildren();
         amStage.update();
-        
     }
 
 
