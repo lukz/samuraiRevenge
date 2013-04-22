@@ -21,8 +21,9 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
         SFX_WHIP = 'assets/sfx/tailwhip',
         SFX_WHIP2 = 'assets/sfx/tailwhip2';
         SFX_WHIP_S = 'assets/sfx/tailwhip_slow';
-
         ASSET_COUNT = 18;
+
+        LOADING = 'assets/other/loading.png';
 
 (function (window) {
 
@@ -30,10 +31,17 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
         spriteSheets = [],
         theGame,
         self = this,
-        scale;
+        scale,
+        amStage,
+        loaderBar,
+        loaderBg;
+
 
     AssetManager.prototype.getAssets = function() { return assets; };
     AssetManager.prototype.getSpriteSheets = function() { return spriteSheets; };
+    AssetManager.prototype.getAmStage = function() { return amStage; };
+    AssetManager.prototype.getLoaderBar = function() { return loaderBar; };
+    AssetManager.prototype.getLoaderBg = function() { return loaderBg; };
 
     function AssetManager(game) {
         scale = game.scale;
@@ -42,6 +50,8 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
     }
 
     AssetManager.prototype.initialize = function (game) {
+        self.loadLoadingBG(LOADING);
+
         theGame = game;
 
         var canPlayMp3;
@@ -49,26 +59,27 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
 
         // For drawing load progress
         var canvas = document.getElementById('canvas');
-        stage = new createjs.Stage(canvas);
+        amStage = new createjs.Stage(canvas);
+        this.amStage = amStage;
 
-        var downloadProgress;
-        var loaderBar = new createjs.Container();
+        loaderBar = new createjs.Container();
         var barHeight = 20;
         var loaderColor = createjs.Graphics.getRGB(247,247,247);
         bar = new createjs.Shape();
         bar.graphics.beginFill(loaderColor).drawRect(0, 0, 1, barHeight).endFill();
 
-        loaderWidth = 300;
+        loaderWidth = 400;
         var bgBar = new createjs.Shape();
         var padding = 3;
         bgBar.graphics.setStrokeStyle(1).beginStroke(loaderColor).drawRect(-padding/2, -padding/2, loaderWidth+padding, barHeight+padding);
 
-        loaderBar.x = canvas.width - loaderWidth>>1;
-        loaderBar.y = canvas.height - barHeight>>1; 
+
+        loaderBar.x = (canvas.width - 410);
+        loaderBar.y = (canvas.height - 40); 
         loaderBar.addChild(bar, bgBar);    
 
-        stage.addChild(loaderBar);
-        stage.update();
+        amStage.addChild(loaderBar);
+        amStage.update();
 
 
         // Need to check the canPlayType first or an exception
@@ -143,6 +154,14 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
         ++requestedAssets;
     }
 
+    self.loadLoadingBG = function(e) {
+        var img = new Image();
+        img.onload = self.onLoadedLoadingBG;
+        img.src = e;
+
+        assets[e] = img;
+    }
+
     self.loadSound = function(assetElement, url) {
         assetElement.src = url;
         assetElement.addEventListener('canplaythrough', self.onLoadedAsset, false);
@@ -156,15 +175,27 @@ var     HERO_IMAGE = 'assets/other/samurai.png',
     // and initialize the game, if so
     self.onLoadedAsset = function(e) {
         ++loadedAssets;
+        console.log("asset");
         
         bar.scaleX = (loaderWidth/ASSET_COUNT)*loadedAssets | 0;
-        stage.update();
+        amStage.update();
 
         if ( loadedAssets == requestedAssets ) {
-            stage.removeAllChildren();
-            stage.update();
+            //amStage.removeAllChildren();
+            //amStage.update();
             theGame.initializeGame();
         }
+        
+    }
+
+    self.onLoadedLoadingBG = function(e) {
+        assets[LOADING] = nearestNeighborScale(assets[LOADING], scale);
+        loaderBg = new Bitmap(assets[LOADING]);
+        amStage.removeChild(loaderBar);
+        amStage.addChild(loaderBg);
+        amStage.addChild(loaderBar);
+        //amStage.removeAllChildren();
+        amStage.update();
         
     }
 

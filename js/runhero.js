@@ -42,6 +42,7 @@ function _game() {
 		bulletTimeTxt,
 		pressSpaceTxt,
 		onStartScreen,
+		onLoadingScreen,
 		onGameOverScreen,
 		onShowLevelScreen = false,
 		ShowLevelScreenDelay = 0,
@@ -87,6 +88,8 @@ function _game() {
 	self.getHero = function() {return hero;}
 
 	self.initializeGame = function() {
+		onLoadingScreen = true;
+
 		musicStart.play();
 		self.highscoreCheck();
 
@@ -112,11 +115,11 @@ function _game() {
 		canvas.width = w;
 		canvas.height = h;
 		canvas.id = "Canvas";
-		left.appendChild(canvas);
+		//left.appendChild(canvas);
 		self.canvas = canvas;
 
 		// initializing the stage
-		stage = new Stage(canvas);
+		stage = new assMan.getAmStage();
 		this.stage = stage;
 
 		self.level = level;
@@ -142,10 +145,10 @@ function _game() {
 
 		background = self.createMapBg();
 		bg.addChild(background);
-		stage.addChild(bg);
+		
 
 		world = new Container();
-		stage.addChild(world);
+		
 
 		// creating the Hero, and assign an image
 		// also position the hero in the middle of the screen
@@ -157,7 +160,7 @@ function _game() {
 
 		// bars, pts
 		top = new Container();
-		stage.addChild(top);
+		
 
 		var graphics = new createjs.Graphics().beginFill("#000000").drawRect(0, 0, self.width, 33);
  		var shape = new createjs.Shape(graphics);
@@ -212,36 +215,6 @@ function _game() {
  		blackAlphaShape.alpha = 0.3;
  		startGame.addChild(blackAlphaShape);
 
-		var txt = new BitmapAnimation(spriteSheets[STRINGS]);
-		txt.snapToPixel = true;
-		txt.x = 45;
-		txt.y = self.height - 285;
-		txt.gotoAndStop("controls");
-		startGame.addChild(txt);
- 		var keys = new Bitmap(assets[KEYS]);
-		keys.snapToPixel = true;
-		keys.x = 20;
-		keys.y = self.height - 250;
-		startGame.addChild(keys);
-
-		txt = new BitmapAnimation(spriteSheets[STRINGS]);
-		txt.snapToPixel = true;
-		txt.x = 290;
-		txt.y = self.height - 97;
-		txt.scaleX = .5;
-		txt.scaleY = .5;
-		txt.gotoAndStop("bulletTime");
-		startGame.addChild(txt);
-		txt = new BitmapAnimation(spriteSheets[STRINGS]);
-		txt.snapToPixel = true;
-		txt.x = 290;
-		txt.y = self.height - 40;
-		txt.scaleX = .5;
-		txt.scaleY = .5;
-		txt.gotoAndStop("reset");
-		startGame.addChild(txt);
-
-
 		graphics = new createjs.Graphics().beginFill("#000000").drawRect(0, self.height / 2 - 195, self.width, 33+20);
  		shape = new createjs.Shape(graphics);
  		shape.cache(0, self.height / 2 - 195, self.width, 33+20);
@@ -265,6 +238,7 @@ function _game() {
 		pressSpaceTxt.scaleY = .5;
 		pressSpaceTxt.gotoAndStop("spaceToPlay");
 		startGame.addChild(pressSpaceTxt);
+
 
 		var highscoreTemp = self.getHighscoreText();
 		highscoreTemp.y = self.height - 255;
@@ -311,6 +285,13 @@ function _game() {
 
 		onGameOverScreen = false;
 
+        bg.visible = false;
+    	world.visible = false;
+    	top.visible = false;
+    	startGame.visible = false;
+		stage.addChild(bg);
+		stage.addChild(world);
+		stage.addChild(top);
  		stage.addChild(startGame);
 
 		/*globalMusic.addEventListener('ended', function() {
@@ -336,6 +317,17 @@ function _game() {
 		Ticker.setFPS(60);
 		Ticker.useRAF = true;
 		Ticker.addListener(self.tick, self);
+
+		// GAME LOADED
+		stage.removeChild(assMan.getLoaderBar());
+		pressSpaceTxt3 = new BitmapAnimation(spriteSheets[STRINGS]);
+		pressSpaceTxt3.snapToPixel = true;
+		pressSpaceTxt3.x = self.width - 280;
+		pressSpaceTxt3.y = self.height - 43;
+		pressSpaceTxt3.scaleX = .5;
+		pressSpaceTxt3.scaleY = .5;
+		pressSpaceTxt3.gotoAndStop("spaceToPlay");
+		stage.addChild(pressSpaceTxt3);
 	}
 
 
@@ -655,6 +647,7 @@ function _game() {
 				ticks = 0;
 				pressSpaceTxt.visible = !pressSpaceTxt.visible;
 				pressSpaceTxt2.visible = !pressSpaceTxt2.visible;
+				pressSpaceTxt3.visible = !pressSpaceTxt3.visible;
 			}
 		}
 		
@@ -738,11 +731,23 @@ function _game() {
                	}
                 break;	
             case KEYCODE_SPACE:
-                bulletTime = false;
-                SlowDownRate = 1;
+            	if(!onLoadingScreen) {
+	                bulletTime = false;
+	                SlowDownRate = 1;
 
-                self.reset();
-            	rockManager.box2d.removeAllBodies();
+	                self.reset();
+	            	rockManager.box2d.removeAllBodies();
+	            } else {
+					stage.removeChild(pressSpaceTxt3);
+	            	stage.removeChild(assMan.getLoaderBg());
+	            	onLoadingScreen = false;
+
+	            	bg.visible = true;
+	            	world.visible = true;
+	            	top.visible = true;
+	            	startGame.visible = true;
+	            	stage.update();
+	            }
             	break;
         }
 	}
