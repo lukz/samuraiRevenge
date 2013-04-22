@@ -510,16 +510,8 @@ function _game() {
 
 	                	if(lvlText.x <= (self.width/2) + 80 && lvlText.x >= (self.width/2) - 80) {
 	                		lvlSlowDownRate = 4;
-	                		SlowDownRate = 2;
-	                		hero._animation.frequency = 8;
-	                		bulletTime = true;
-	                		rockManager.box2d.devideStep(SlowDownRate);
 	                	} else {
 	                		lvlSlowDownRate = 1;
-	                		SlowDownRate = 1;
-	                		hero._animation.frequency = 4;
-	                		bulletTime = false;
-	                		rockManager.box2d.devideStep(SlowDownRate);
 	                	}
 	                		
 	                	if(lvlText.x < -lvlText.getBounds().width) {
@@ -721,7 +713,7 @@ function _game() {
                 hero.isJumping = true;
                 break;
             case KEYCODE_CTRL:
-            	if(hero.IsAlive && !bulletTime && (bulletTimeLeft > 0) && !onShowLevelScreen) {
+            	if(hero.IsAlive && !bulletTime && (bulletTimeLeft > 0) /*&& !onShowLevelScreen*/) {
                 	bulletTime = true;
                 	SlowDownRate = 2;
                 	hero.BulletTimeMoveHelper = 1.4;
