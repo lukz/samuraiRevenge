@@ -98,13 +98,11 @@ function calculateCollision(obj, direction, collideables, moveBy)
 }
 
 /*
- * Calculated the boundaries of an object.
- *
- * CAUTION: <rotation> OR <skew> attributes are NOT used for this calculation!
- *
- * @method getBounds
- * @param {DisplayObject} the object to calculate the bounds from
- * @return {Rectangle} The rectangle describing the bounds of the object
+ Calculated the boundaries of an object.
+ CAUTION: <rotation> OR <skew> attributes are NOT used for this calculation!
+ @method getBounds
+ @param {DisplayObject} the object to calculate the bounds from
+ @return {Rectangle} The rectangle describing the bounds of the object
  */
 function getBounds(obj,rounded) {
   var bounds={x:Infinity,y:Infinity,width:0,height:0};
